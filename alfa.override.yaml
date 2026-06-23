@@ -1,0 +1,5 @@
+services:
+  web:
+    container_name: web-alfa
+    ports:
+      - "8081:80"
