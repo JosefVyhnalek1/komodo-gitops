@@ -2,3 +2,4 @@ services:
   web:
     image: nginx:alpine
     restart: unless-stopped
+    network_mode: host

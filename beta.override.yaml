@@ -1,5 +1,3 @@
 services:
   web:
     container_name: web-beta
-    ports:
-      - "8082:80"
