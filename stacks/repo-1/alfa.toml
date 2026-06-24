@@ -4,6 +4,6 @@ name = "alpha-repo1"
 server = "server-alfa"
 linked_repo = "komodo-gitops"
 file_paths = [
-    "docker-compose.yaml",
-    "alfa.override.yaml"
+    "repo1/docker-compose.yaml",
+    "repo1/alfa/docker-compose.override.yaml"
 ]
