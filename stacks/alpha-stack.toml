@@ -1,0 +1,9 @@
+[[stack]]
+name = "alpha-stack"
+[stack.config]
+server = "server-alfa"
+linked_repo = "komodo-gitops"
+file_paths = [
+    "docker-compose.yaml",
+    "alfa.override.yaml"
+]
