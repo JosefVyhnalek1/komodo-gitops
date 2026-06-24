@@ -1,0 +1,11 @@
+curl --request POST \
+  --url http://localhost:9120/execute \
+  --header 'Content-Type: application/json' \
+  --header 'X-Api-Key: <api-key>' \
+  --header 'X-Api-Secret: <api-secret>' \
+  --data '{
+    "type": "RunProcedure",
+    "params": {
+      "procedure": "on-push"
+    }
+  }'
