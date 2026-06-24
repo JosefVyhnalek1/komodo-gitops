@@ -3,5 +3,5 @@ services:
     container_name: web-alfa-test-test-test
     image: nginx:1.31.2
    # env_file:
-      #- /etc/env/repo-1/.env
-      #- /etc/env/repo-1/override.env
+      #- /etc/env/repo-1/.enc.env
+      #- /etc/env/repo-1/override.enc.env

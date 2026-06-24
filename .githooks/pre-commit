@@ -1,0 +1,38 @@
+#!/bin/bash
+set -e
+
+PUBLIC_KEY="age1z4ekqymndqa0nsecuztxw2jsa9xwa4jtmqeldv3u945xhdnqfd4suujv8g"
+SOPS_VERSION="v3.13.0"
+BIN_DIR="$HOME/.sops-bin"
+SOPS_PATH="$BIN_DIR/sops.exe"
+
+if [ ! -f "$SOPS_PATH" ]; then
+    echo "SOPS pro Windows nebyl nalezen. Stahuji automaticky..."
+    mkdir -p "$BIN_DIR"
+    curl -fL -o "$SOPS_PATH" "https://github.com/getsops/sops/releases/download/$SOPS_VERSION/sops-$SOPS_VERSION.amd64.exe"
+    echo "SOPS úspěšně stažen."
+fi
+
+STAGED_ENC_FILES=$(git diff --cached --name-only --diff-filter=ACM | grep '\.enc\.env$' || true)
+
+for file in $STAGED_ENC_FILES; do
+    if [ -f "$file" ]; then
+
+      #přidat sem tu kontrolu jestli už to není zašifrovaný když se třeba ten commit neudělá, ale nějaký soubor už to zašifruje - nebo ono to asi samo neprojde
+      #šifrovat pro každý prostředí zvlášť každý jiným klíčem
+      #když přidávám nový soubor tak je potřeba nastavit konec řádků na LF
+
+            tr -d '\r' < "$file" > "$file.lf" && mv "$file.lf" "$file"
+
+            echo "Hook detekoval změnu v $file. Šifruji na místě..."
+
+            "$SOPS_PATH" --encrypt --age "$PUBLIC_KEY" "$file" > "$file.tmp"
+
+            mv "$file.tmp" "$file"
+
+            git add "$file"
+
+            echo " Soubor $file byl přepsán šifrou."
+
+    fi
+done
