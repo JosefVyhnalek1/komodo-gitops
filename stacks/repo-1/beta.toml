@@ -1,7 +1,7 @@
 [[stack]]
-name = "repo1-server-beta"
+name = "repo1-beta"
 [stack.config]
-server = "server-beta"
+server = "beta"
 linked_repo = "komodo-gitops"
 file_paths = [
     "repo-1/docker-compose.yaml",
