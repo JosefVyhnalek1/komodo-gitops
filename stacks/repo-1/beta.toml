@@ -1,5 +1,5 @@
 [[stack]]
-name = "beta-repo1"
+name = "repo1-server-beta"
 [stack.config]
 server = "server-beta"
 linked_repo = "komodo-gitops"
