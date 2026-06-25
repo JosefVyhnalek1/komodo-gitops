@@ -8,3 +8,4 @@ services:
     restart: unless-stopped
     env_file:
       - .env
+      - repos-1/.enc.env
