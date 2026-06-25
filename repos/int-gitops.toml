@@ -1,0 +1,6 @@
+[[repo]]
+name = "int-gitops"
+[repo.config]
+server = "int"
+repo = "JosefVyhnalek1/komodo-gitops"
+path = "/home/vyhnalek/komodo/repos"
