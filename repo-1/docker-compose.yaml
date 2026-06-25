@@ -3,5 +3,6 @@ x-podman:
 
 services:
   web:
+    container_name: test-web-1
     image: nginx:alpine
     restart: unless-stopped
