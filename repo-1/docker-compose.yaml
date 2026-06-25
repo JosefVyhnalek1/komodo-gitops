@@ -1,5 +1,7 @@
+x-podman:
+  name_separator_compat: true
+
 services:
   web:
     image: nginx:alpine
     restart: unless-stopped
-    network_mode: host
