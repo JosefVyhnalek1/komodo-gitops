@@ -56,7 +56,12 @@ for file in $STAGED_ENC_FILES; do
 
                 # Použijeme sed k vyhledání řádku env_enc_hash: a nahradíme celou hodnotu v uvozovkách
                 # Funguje to na formáty: env_enc_hash: "cokoli" i env_enc_hash: 'cokoli'
-                sed -i -E "s/(env_enc_hash:[[:space:]]*[\"']).*([\"'])/\1$FILE_HASH\2/" "$COMPOSE_FILE"
+
+                if [[ "$file" == *"envs/int/"* ]]; then
+                    sed -i -E "s/(env_enc_hash:[[:space:]]*[\"']).*([\"'])/\1$FILE_HASH\2/" "$COMPOSE_FILE"
+                else
+                    sed -i -E "s/(env_enc_hash_main:[[:space:]]*[\"']).*([\"'])/\1$FILE_HASH\2/" "$COMPOSE_FILE"
+                fi
 
                 # Přidáme upravený compose soubor do stejného commitu
                 git add "$COMPOSE_FILE"
