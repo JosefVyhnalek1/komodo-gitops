@@ -48,6 +48,8 @@ for file in $STAGED_ENC_FILES; do
                 COMPOSE_FILE="apps/$APP_NAME/compose.yml"
             fi
 
+            cat $COMPOSE_FILE
+
             # Pokud cílový compose soubor existuje, přepíšeme v něm hash
             if [ -f "$COMPOSE_FILE" ]; then
                 echo "Aktualizuji hash v $COMPOSE_FILE na: $FILE_HASH"
