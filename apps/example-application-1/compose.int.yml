@@ -1,7 +1,7 @@
 services:
   web:
     container_name: web-alfa-test-test-test
-    image: nginx:1.31.1
+    image: nginx:1.31
     labels:
       env_enc_hash: "ff5696e2bbd4aebfec83c00a76dc2815"
     env_file:
