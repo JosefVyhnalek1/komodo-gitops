@@ -8,4 +8,4 @@ services:
     restart: unless-stopped
     env_file:
       - .env  #bere to z /home/vyhnalek/komodo/repos/repo-1 - takže i když se ten compose pouští v /home/vyhnalek/komodo/repos, tak
-      - server-beta/.env
+    #  - server-beta/.env
