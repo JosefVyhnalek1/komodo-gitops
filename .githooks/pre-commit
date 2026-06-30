@@ -34,5 +34,33 @@ for file in $STAGED_ENC_FILES; do
 
             echo " Soubor $file byl přepsán šifrou."
 
+            FILE_HASH=$(md5sum "$file" | awk '{print $1}')
+
+                    # Zjistíme název aplikace z názvu souboru (vytáhne text před první tečkou, např. "example-application-1")
+                    BASE_NAME=$(basename "$file")
+                    APP_NAME="${BASE_NAME%%.*}"
+
+                    # Určíme, o jaké prostředí se jedná a jaký compose soubor máme upravit
+                    # (Kontrolujeme, jestli cesta obsahuje "envs/int/")
+                    if [[ "$file" == *"envs/int/"* ]]; then
+                        COMPOSE_FILE="apps/$APP_NAME/compose.int.yml"
+                    else
+                        COMPOSE_FILE="apps/$APP_NAME/compose.yml"
+                    fi
+
+                    # Pokud cílový compose soubor existuje, přepíšeme v něm hash
+                    if [ -f "$COMPOSE_FILE" ]; then
+                        echo "Aktualizuji hash v $COMPOSE_FILE na: $FILE_HASH"
+
+                        # Použijeme sed k vyhledání řádku env_enc_hash: a nahradíme celou hodnotu v uvozovkách
+                        # Funguje to na formáty: env_enc_hash: "cokoli" i env_enc_hash: 'cokoli'
+                        sed -i -E "s/(env_enc_hash:[[:space:]]*[\"']).*([\"'])/\1$FILE_HASH\2/" "$COMPOSE_FILE"
+
+                        # Přidáme upravený compose soubor do stejného commitu
+                        git add "$COMPOSE_FILE"
+                    else
+                        echo "⚠️ Varování: Compose soubor $COMPOSE_FILE nebyl nalezen, hash nelze zapsat."
+                    fi
+
     fi
 done
