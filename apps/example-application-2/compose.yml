@@ -4,6 +4,6 @@ services:
     image: nginx:alpine
     restart: unless-stopped
     labels:
-      env_enc_hash_main: "e3a099b602ec22da350d1b27e15eec0a"
+      env_enc_hash_main: "b9748dbd2e64e4d32fb63e21fcf8ed8d"
     env_file:
       - ../../envs/example-application-2.enc.env
