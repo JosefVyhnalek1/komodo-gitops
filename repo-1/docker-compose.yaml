@@ -1,5 +1,5 @@
 x-podman:
-  name_separator_compat: true
+  docker_compose_compat: true
 
 services:
   web:
