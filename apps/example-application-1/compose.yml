@@ -7,7 +7,7 @@ services:
     image: nginx:alpine
     restart: unless-stopped
     labels:
-      env_enc_hash: "example"
+      env_enc_hash: "4ad87b0146face79f33479fe51d82285"
     env_file:
       - ../../envs/example-application-1.env  #bere to z /home/vyhnalek/komodo/repos/repo-1 - takže i když se ten compose pouští v /home/vyhnalek/komodo/repos, tak
     #  - server-beta/.env
