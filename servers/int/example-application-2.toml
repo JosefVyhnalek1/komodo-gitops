@@ -1,5 +1,5 @@
 [[stack]]
-name = "example-application-2-int"
+name = "int/example-application-2"
 [stack.config]
 server = "int"
 linked_repo = "int-gitops"
