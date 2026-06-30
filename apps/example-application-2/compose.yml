@@ -1,0 +1,9 @@
+services:
+  web:
+    container_name: test-web-1
+    image: nginx:alpine
+    restart: unless-stopped
+    labels:
+      env_enc_hash_main: "0a7891e1637c1eb404256d73eb3579d2"
+    env_file:
+      - ../../envs/example-application-2.env

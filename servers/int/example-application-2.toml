@@ -1,0 +1,17 @@
+[[stack]]
+name = "example-application-2-int"
+[stack.config]
+server = "int"
+linked_repo = "int-gitops"
+file_paths = [
+    "apps/example-application-2/compose.yml",
+]
+pre_deploy.command = """
+  # Add multiple commands on new lines. Supports comments and escaped newlines.
+  chmod 777 ./scripts/env-decryption.sh
+  ./scripts/env-decryption.sh
+"""
+pre_deploy.shell_mode = false
+environment = """
+  # VARIABLE = value
+"""
