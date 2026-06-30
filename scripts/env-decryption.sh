@@ -3,10 +3,10 @@ export PATH="$HOME/.sops-bin:/usr/local/bin:$PATH"
 
 export SOPS_AGE_KEY_FILE="/home/vyhnalek/sops-key"
 
-cd repo-1
+cd envs
 
-sops -d .enc.env > .env
+sops -d example-application.enc.env > example-application.env
 
-cd server-beta
+cd int
 
-sops -d .override.enc.env > .override.env
+sops -d example-application.enc.env > example-application.env
