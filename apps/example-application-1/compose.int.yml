@@ -3,7 +3,7 @@ services:
     container_name: web-alfa-test-test-test
     image: nginx:1.31.2
     labels:
-      env_enc_hash: "example"
+      env_enc_hash: "412007a2b02d6fc31f871b9aadda1173"
     env_file:
       - ../../envs/int/example-application-1.env
       #- /etc/.enc.env
