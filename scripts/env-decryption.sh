@@ -1,6 +1,6 @@
 #!/bin/bash
-export PATH="$HOME/.sops-bin:/usr/local/bin:$PATH"
 
+export PATH="$HOME/.sops-bin:/usr/local/bin:$PATH"
 export SOPS_AGE_KEY_FILE="/home/vyhnalek/sops-key"
 
 cd envs
