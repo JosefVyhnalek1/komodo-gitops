@@ -3,10 +3,13 @@
 export PATH="$HOME/.sops-bin:/usr/local/bin:$PATH"
 export SOPS_AGE_KEY_FILE="/home/vyhnalek/sops-key"
 
+APP_NAME="$1"
+ENVIRONMENT="$2"
+
 cd envs
 
-sops -d example-application-1.enc.env > example-application-1.env
+sops -d "$APP_NAME.enc.env" > "$APP_NAME.env"
 
-cd int
+cd $APP_NAME
 
-sops -d example-application-1.enc.env > example-application-1.env
+sops -d "$APP_NAME.enc.env" > "$APP_NAME.env"
