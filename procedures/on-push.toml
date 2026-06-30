@@ -1,0 +1,18 @@
+[[procedure]]
+name = "on-push"
+
+[[procedure.config.stage]]
+name = "Synchronize"
+enabled = true
+executions = [
+    { execution.type = "RunSync", execution.params.sync = "sync", enabled = true }
+]
+
+[[procedure.config.stage]]
+name = "deploy if changed"
+enabled = true
+executions = [
+    { execution.type = "BatchDeployStackIfChanged", execution.params.pattern = """
+# Match stacks by name, id, wildcard, or \regex\.
+*""", enabled = true }
+]
