@@ -3,6 +3,6 @@ services:
     container_name: web-alfa-test-test-test
     image: nginx:1.31.2
     env_file:
-      - server-beta/.env
+      - server-beta/.override.env
       #- /etc/.enc.env
      # - /etc/.prod.env
