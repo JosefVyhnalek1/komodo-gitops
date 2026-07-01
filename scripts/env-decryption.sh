@@ -10,6 +10,6 @@ cd envs
 
 sops -d "$APP_NAME.enc.env" > "$APP_NAME.env"
 
-cd $APP_NAME
+cd $ENVIRONMENT
 
 sops -d "$APP_NAME.enc.env" > "$APP_NAME.env"
