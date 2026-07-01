@@ -38,33 +38,26 @@ for file in $STAGED_ENC_FILES; do
 
             APP_NAME=$(basename "$file" ".enc.env") # zjistíme jméno aplikace
 
-            # Určíme, o jaké prostředí se jedná a jaký compose soubor máme upravit
-            # (Kontrolujeme, jestli cesta obsahuje "envs/int/")
-            if [[ "$file" == *"envs/int/"* ]]; then
-                COMPOSE_FILE="apps/$APP_NAME/compose.int.yml"
+            if [[ "$file" =~ envs/([^/]+)/ ]]; then
+
+                ENV_NAME="${BASH_REMATCH[1]}"
+                COMPOSE_FILE="apps/$APP_NAME/compose.${ENV_NAME}.yml"
+                SED_TARGET="env_enc_hash"
             else
+
                 COMPOSE_FILE="apps/$APP_NAME/compose.yml"
+                SED_TARGET="env_enc_hash_main"
             fi
 
-            cat $COMPOSE_FILE
-
-            # Pokud cílový compose soubor existuje, přepíšeme v něm hash
             if [ -f "$COMPOSE_FILE" ]; then
-                echo "Aktualizuji hash v $COMPOSE_FILE na: $FILE_HASH"
+                echo "Aktualizuji hash v $COMPOSE_FILE"
 
-                # Použijeme sed k vyhledání řádku env_enc_hash: a nahradíme celou hodnotu v uvozovkách
-                # Funguje to na formáty: env_enc_hash: "cokoli" i env_enc_hash: 'cokoli'
+                sed -i -E "s/(${SED_TARGET}:[[:space:]]*[\"']).*([\"'])/\1$FILE_HASH\2/" "$COMPOSE_FILE"
 
-                if [[ "$file" == *"envs/int/"* ]]; then
-                    sed -i -E "s/(env_enc_hash:[[:space:]]*[\"']).*([\"'])/\1$FILE_HASH\2/" "$COMPOSE_FILE"
-                else
-                    sed -i -E "s/(env_enc_hash_main:[[:space:]]*[\"']).*([\"'])/\1$FILE_HASH\2/" "$COMPOSE_FILE"
-                fi
-
-                # Přidáme upravený compose soubor do stejného commitu
                 git add "$COMPOSE_FILE"
             else
-                echo "⚠️ Varování: Compose soubor $COMPOSE_FILE nebyl nalezen, hash nelze zapsat."
+                echo "Compose soubor $COMPOSE_FILE nebyl nalezen, hash nelze zapsat."
+                exit 1
             fi
 
     fi
