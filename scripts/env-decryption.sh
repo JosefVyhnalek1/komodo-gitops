@@ -10,6 +10,7 @@ cd envs
 
 sops -d "$APP_NAME.enc.env" > "$APP_NAME.env"
 
-cd $ENVIRONMENT
-
-sops -d "$APP_NAME.enc.env" > "$APP_NAME.env"
+if [ -n "$ENVIRONMENT" ]; then
+  cd $ENVIRONMENT
+  sops -d "$APP_NAME.enc.env" > "$APP_NAME.env"
+fi
