@@ -36,9 +36,7 @@ for file in $STAGED_ENC_FILES; do
 
             FILE_HASH=$(md5sum "$file" | awk '{print $1}')
 
-            # Zjistíme název aplikace z názvu souboru (vytáhne text před první tečkou, např. "example-application-1")
-            BASE_NAME=$(basename "$file")
-            APP_NAME="${BASE_NAME%%.*}"
+            APP_NAME=$(basename "$file" ".enc.env") # zjistíme jméno aplikace
 
             # Určíme, o jaké prostředí se jedná a jaký compose soubor máme upravit
             # (Kontrolujeme, jestli cesta obsahuje "envs/int/")
