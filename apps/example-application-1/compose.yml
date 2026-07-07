@@ -7,5 +7,5 @@ services:
     labels:
       env_enc_hash_main: "0a7891e1637c1eb404256d73eb3579d2"
     env_file:
-      - .env  #bere to z /home/vyhnalek/komodo/repos/repo-1 - takže i když se ten compose pouští v /home/vyhnalek/komodo/repos, tak
+      - example-application-1/.env  #bere to z /home/vyhnalek/komodo/repos/repo-1 - takže i když se ten compose pouští v /home/vyhnalek/komodo/repos, tak
     #  - server-beta/.env
