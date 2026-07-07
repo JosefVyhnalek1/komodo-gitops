@@ -3,7 +3,7 @@ services:
     container_name: web-alfa-test-test-test
     image: docker.io/library/nginx:trixie-perl
     labels:
-      env_enc_hash: "2d5961fb30d92bc912247f742648ae9b"
+      env_enc_hash: "1752aba5256b10b11dae4d721672d0d4"
     env_file:
       - example-application-1.int.env
       #- /etc/.enc.env
