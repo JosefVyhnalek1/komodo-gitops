@@ -6,4 +6,4 @@ services:
     labels:
       env_enc_hash_main: "55bb85e7ba7e78657323dbdb3d4f2436"
     env_file:
-      - ../../envs/example-application-2.env
+      - example-application-2.env
