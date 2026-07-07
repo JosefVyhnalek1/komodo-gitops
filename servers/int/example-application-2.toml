@@ -4,6 +4,7 @@ name = "int_example-application-2"
 server = "int"
 linked_repo = "int-gitops"
 file_paths = [
+    "apps/compose.yml",
     "apps/example-application-2/compose.yml",
 ]
 pre_deploy.command = """

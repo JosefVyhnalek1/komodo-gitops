@@ -4,6 +4,7 @@ name = "int-zkouska"
 server = "int"
 linked_repo = "int-gitops"
 file_paths = [
+    "apps/compose.yml",
     "apps/example-application-1/compose.yml",
     "apps/example-application-1/compose.int.yml"
 ]

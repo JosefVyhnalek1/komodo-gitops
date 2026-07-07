@@ -1,0 +1,3 @@
+x-podman:
+  docker_compose_compat: true
+
