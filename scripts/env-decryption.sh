@@ -7,10 +7,10 @@ APP_NAME="$1"
 ENVIRONMENT="$2"
 
 cd envs
-
-sops -d "$APP_NAME.enc.env" > "$APP_NAME.env"
+ 
+sops -d "$APP_NAME.enc.env" > "$APP_NAME.env" #hodit to potom do složky repo-1 abych se zbavil ../.. - dát to vedle compose filu
 
 if [ -n "$ENVIRONMENT" ]; then
   cd $ENVIRONMENT
-  sops -d "$APP_NAME.enc.env" > "$APP_NAME.env"
+  sops -d "$APP_NAME.enc.env" > "$APP_NAME.env" # tady ještě bude muset být název jinej
 fi
