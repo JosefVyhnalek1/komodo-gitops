@@ -8,7 +8,7 @@ file_paths = [
 ]
 pre_deploy.command = """
   chmod 777 ./scripts/env-decryption.sh
-  ./scripts/env-decryption.sh example-application-2 int
+  ./scripts/env-decryption.sh example-application-2
 """
 pre_deploy.shell_mode = false
 extra_args = ["--force-recreate"]
