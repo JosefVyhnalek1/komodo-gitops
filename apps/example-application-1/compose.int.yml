@@ -5,6 +5,6 @@ services:
     labels:
       env_enc_hash: "1752aba5256b10b11dae4d721672d0d4"
     env_file:
-      - example-application-1.int.env
+      - .int.env
       #- /etc/.enc.env
       # - /etc/.prod.env
