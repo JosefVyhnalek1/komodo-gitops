@@ -1,3 +1,4 @@
+#when copying change name, server, file_paths, parametres in pre_deploy command
 [[stack]]
 name = "int-zkouska"
 [stack.config]
