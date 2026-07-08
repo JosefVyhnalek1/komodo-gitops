@@ -27,10 +27,12 @@ if [ ! -f "$SOPS_PATH" ]; then
     echo "SOPS downloaded successfully."
 fi
 
-STAGED_ENC_FILES=$(git diff --cached --name-only --diff-filter=ACM | grep '\.enc\.env$' || true)
+STAGED_ENC_FILES=$(git diff --cached --name-only --diff-filter=ACM | grep '\.env$' || true)
 
 for file in $STAGED_ENC_FILES; do
-    if [ -f "$file" ]; then
+    if [ -f "$file" ]; then #file je soubor s cestou začínající envs/
+
+      #TODO kontrola jestli to není ten .enc.env - to nesmí být, a taky to musí začínat na _
 
       #přidat sem tu kontrolu jestli už to není zašifrovaný když se třeba ten commit neudělá, ale nějaký soubor už to zašifruje - nebo ono to asi samo neprojde
       #šifrovat pro každý prostředí zvlášť každý jiným klíčem
@@ -42,30 +44,55 @@ for file in $STAGED_ENC_FILES; do
                       sed -i "s/$'\r'//" "$file"
           fi
 
-            echo "Hook detekoval změnu v $file. Šifruji na místě..."
+            echo "Hook detekoval změnu v $file."
 
-            "$SOPS_PATH" --encrypt --age "$PUBLIC_KEY" "$file" > "$file.tmp"
-            mv "$file.tmp" "$file"
-            git add "$file"
 
-            echo " Soubor $file byl přepsán šifrou."
 
-            FILE_HASH=$(md5sum "$file" | awk '{print $1}')
 
-            APP_NAME=$(basename "$file" ".enc.env") # zjistíme jméno aplikace
+            TMP_NAME=$(basename "$file" ".env")
+            APP_NAME="${TMP_NAME:1}" # zjistíme jméno aplikace
 
             if [[ "$file" =~ envs/([^/]+)/ ]]; then
 
-                ENV_NAME="${BASH_REMATCH[1]}"
                 COMPOSE_FILE="apps/$APP_NAME/compose.${ENV_NAME}.yml"
                 SED_TARGET="env_hash"
+
+                ENV_NAME="${BASH_REMATCH[1]}"
+                PUBLIC_KEY=$(grep "^${ENV_NAME}:" public_keys | cut -d':' -f2)
+
+                ENC_FILE="envs/$ENV_NAME/$APP_NAME.override.enc.env"
+
+                "$SOPS_PATH" --encrypt --age "$PUBLIC_KEY" "$file" > "$ENC_FILE"
+                git add "$ENC_FILE"
+
+
             else
 
                 COMPOSE_FILE="apps/$APP_NAME/compose.yml"
                 SED_TARGET="env_hash_main"
+
+                for line in $(cat public_keys); do
+
+                    ENV_NAME=$(echo "$line" | cut -d':' -f1)
+                    PUBLIC_KEY=$(echo "$line" | cut -d':' -f2)
+
+                    if [ -f "servers/$ENV_NAME/$APP_NAME.toml" ]; then
+
+                      ENC_FILE="envs/$ENV_NAME/$APP_NAME.enc.env"
+
+                      "$SOPS_PATH" --encrypt --age "$PUBLIC_KEY" "$file" > "$ENC_FILE"
+                      git add "$ENC_FILE"
+
+                    fi
+
+                done
+
             fi
 
             if [ -f "$COMPOSE_FILE" ]; then
+
+                FILE_HASH=$(md5sum "$file" | awk '{print $1}') #todo tady je snad v pohodě když to dělám z toho co není zašifrovaný
+
                 echo "Aktualizuji hash v $COMPOSE_FILE"
 
                 if [ "$OS_TYPE" = "darwin" ]; then
@@ -79,6 +106,9 @@ for file in $STAGED_ENC_FILES; do
                 echo "Compose soubor $COMPOSE_FILE nebyl nalezen, hash nelze zapsat."
                 exit 1
             fi
+
+            echo "paste your new env here" > "$file"
+            git add "$file"
 
     fi
 done
