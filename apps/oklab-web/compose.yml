@@ -11,7 +11,7 @@ services:
     env_file: '/home/developer/environments/oklab-web/.env'
     userns_mode: keep-id:uid=999,gid=999
     labels:
-      - env_hash_main=9330113552104159b53964efd91c732d
+      - env_hash_main=a5e787ce9c2050a9715a85d441c42f63
       - logspout.label=fe.oklab-web
       - traefik.enable=true
       - traefik.http.services.oklab-web.loadbalancer.serverstransport=transport@file
