@@ -31,7 +31,7 @@ STAGED_ENC_FILES=$(git diff --cached --name-only --diff-filter=ACM | grep '\.env
 for file in $STAGED_ENC_FILES; do
     if [ -f "$file" ]; then
 
-    FILENAME=$(basename "$file")
+      FILENAME=$(basename "$file")
 
       if [[ "$FILENAME" =~ \.enc\.env$ ]]; then
           echo "Error: File $file is already encrypted (.enc.env). Only source files starting with an underscore belong in the commit."
@@ -47,73 +47,73 @@ for file in $STAGED_ENC_FILES; do
       #šifrovat pro každý prostředí zvlášť každý jiným klíčem
       #když přidávám nový soubor tak je potřeba nastavit konec řádků na LF
 
-          if [ "$OS_TYPE" = "darwin" ]; then
-                      sed -i "" "s/$'\r'//" "$file"
-                  else
-                      sed -i "s/$'\r'//" "$file"
-          fi
+      if [ "$OS_TYPE" = "darwin" ]; then
+          sed -i "" "s/$'\r'//" "$file"
+      else
+          sed -i "s/$'\r'//" "$file"
+      fi
 
-            echo "Hook detected a change in $file."
+      echo "Hook detected a change in $file."
 
-            TMP_NAME=$(basename "$file" ".env")
-            APP_NAME="${TMP_NAME:1}" # zjistíme jméno aplikace
+      TMP_NAME=$(basename "$file" ".env")
+      APP_NAME="${TMP_NAME:1}" # zjistíme jméno aplikace
 
-            if [[ "$file" =~ envs/([^/]+)/ ]]; then
+      if [[ "$file" =~ envs/([^/]+)/ ]]; then
 
-                ENV_NAME="${BASH_REMATCH[1]}"
-                PUBLIC_KEY=$(grep "^${ENV_NAME}:" public_keys | cut -d':' -f2)
+          ENV_NAME="${BASH_REMATCH[1]}"
+          PUBLIC_KEY=$(grep "^${ENV_NAME}:" public_keys | cut -d':' -f2)
 
-                ENC_FILE="envs/$ENV_NAME/$APP_NAME.override.enc.env"
+          ENC_FILE="envs/$ENV_NAME/$APP_NAME.override.enc.env"
+
+          "$SOPS_PATH" --encrypt --age "$PUBLIC_KEY" "$file" > "$ENC_FILE"
+          git add "$ENC_FILE"
+
+          COMPOSE_FILE="apps/$APP_NAME/compose.${ENV_NAME}.yml"
+          SED_TARGET="env_hash"
+
+      else
+
+          for line in $(cat public_keys); do
+
+              ENV_NAME=$(echo "$line" | cut -d':' -f1)
+              PUBLIC_KEY=$(echo "$line" | cut -d':' -f2)
+
+              if [ -f "servers/$ENV_NAME/$APP_NAME.toml" ]; then
+
+                ENC_FILE="envs/$ENV_NAME/$APP_NAME.enc.env"
 
                 "$SOPS_PATH" --encrypt --age "$PUBLIC_KEY" "$file" > "$ENC_FILE"
                 git add "$ENC_FILE"
 
-                COMPOSE_FILE="apps/$APP_NAME/compose.${ENV_NAME}.yml"
-                SED_TARGET="env_hash"
+              fi
 
-            else
+          done
 
-                for line in $(cat public_keys); do
+          COMPOSE_FILE="apps/$APP_NAME/compose.yml"
+          SED_TARGET="env_hash_main"
 
-                    ENV_NAME=$(echo "$line" | cut -d':' -f1)
-                    PUBLIC_KEY=$(echo "$line" | cut -d':' -f2)
+      fi
 
-                    if [ -f "servers/$ENV_NAME/$APP_NAME.toml" ]; then
+      if [ -f "$COMPOSE_FILE" ]; then
 
-                      ENC_FILE="envs/$ENV_NAME/$APP_NAME.enc.env"
+          FILE_HASH=$(md5sum "$file" | awk '{print $1}') #todo tady je snad v pohodě když to dělám z toho co není zašifrovaný
 
-                      "$SOPS_PATH" --encrypt --age "$PUBLIC_KEY" "$file" > "$ENC_FILE"
-                      git add "$ENC_FILE"
+          echo "Updating hash in $COMPOSE_FILE"
 
-                    fi
+          if [ "$OS_TYPE" = "darwin" ]; then
+              sed -i "" "s/${SED_TARGET}=.*/${SED_TARGET}=$FILE_HASH/" "$COMPOSE_FILE"
+          else
+              sed -i "s/${SED_TARGET}=.*/${SED_TARGET}=$FILE_HASH/" "$COMPOSE_FILE"
+          fi
 
-                done
+          git add "$COMPOSE_FILE"
+      else
+          echo "Compose file $COMPOSE_FILE not found, cannot write hash."
+          exit 1
+      fi
 
-                COMPOSE_FILE="apps/$APP_NAME/compose.yml"
-                SED_TARGET="env_hash_main"
-
-            fi
-
-            if [ -f "$COMPOSE_FILE" ]; then
-
-                FILE_HASH=$(md5sum "$file" | awk '{print $1}') #todo tady je snad v pohodě když to dělám z toho co není zašifrovaný
-
-                echo "Updating hash in $COMPOSE_FILE"
-
-                if [ "$OS_TYPE" = "darwin" ]; then
-                                sed -i "" "s/${SED_TARGET}=.*/${SED_TARGET}=$FILE_HASH/" "$COMPOSE_FILE"
-                            else
-                                sed -i "s/${SED_TARGET}=.*/${SED_TARGET}=$FILE_HASH/" "$COMPOSE_FILE"
-                fi
-
-                git add "$COMPOSE_FILE"
-            else
-                echo "Compose file $COMPOSE_FILE not found, cannot write hash."
-                exit 1
-            fi
-
-            echo "paste your new env here" > "$file"
-            git add "$file"
+          echo "paste your new env here" > "$file"
+          git add "$file"
 
     fi
 done
