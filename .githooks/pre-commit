@@ -30,9 +30,17 @@ fi
 STAGED_ENC_FILES=$(git diff --cached --name-only --diff-filter=ACM | grep '\.env$' || true)
 
 for file in $STAGED_ENC_FILES; do
-    if [ -f "$file" ]; then #file je soubor s cestou začínající envs/
+    if [ -f "$file" ]; then
 
-      #TODO kontrola jestli to není ten .enc.env - to nesmí být, a taky to musí začínat na _
+      if [[ "$FILENAME" =~ \.enc\.env$ ]]; then
+          echo "Chyba: Soubor $file je již zašifrovaný (.enc.env). Do commitu patři pouze zdrojový soubor začínající na podtržítko."
+          exit 1
+      fi
+
+      if [[ ! "$FILENAME" =~ ^_ ]]; then
+          echo "Chyba: Zdrojový soubor $file musí začínat podtržítkem (např. _env_name.env), aby byl detekován."
+          exit 1
+      fi
 
       #přidat sem tu kontrolu jestli už to není zašifrovaný když se třeba ten commit neudělá, ale nějaký soubor už to zašifruje - nebo ono to asi samo neprojde
       #šifrovat pro každý prostředí zvlášť každý jiným klíčem
@@ -45,9 +53,6 @@ for file in $STAGED_ENC_FILES; do
           fi
 
             echo "Hook detekoval změnu v $file."
-
-
-
 
             TMP_NAME=$(basename "$file" ".env")
             APP_NAME="${TMP_NAME:1}" # zjistíme jméno aplikace
