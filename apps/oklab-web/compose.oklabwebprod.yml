@@ -2,7 +2,7 @@ services:
   oklab-web:
     image: nexus3.oksystem.local:8183/oklab-web:1.4.1
     labels:
-      - env_hash=5f2658c19225bc05982e43f2b3b642e7
+      - env_hash=d9025eb5f00bbb827abce83ec87ab1f4
       - "traefik.http.middlewares.oklab-redirect.redirectregex.regex=^https://[^/]+/$"
       - traefik.http.middlewares.oklab-redirect.redirectregex.replacement=/oklab-web
 
