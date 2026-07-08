@@ -54,9 +54,6 @@ for file in $STAGED_ENC_FILES; do
 
             if [[ "$file" =~ envs/([^/]+)/ ]]; then
 
-                COMPOSE_FILE="apps/$APP_NAME/compose.${ENV_NAME}.yml"
-                SED_TARGET="env_hash"
-
                 ENV_NAME="${BASH_REMATCH[1]}"
                 PUBLIC_KEY=$(grep "^${ENV_NAME}:" public_keys | cut -d':' -f2)
 
@@ -65,11 +62,10 @@ for file in $STAGED_ENC_FILES; do
                 "$SOPS_PATH" --encrypt --age "$PUBLIC_KEY" "$file" > "$ENC_FILE"
                 git add "$ENC_FILE"
 
+                COMPOSE_FILE="apps/$APP_NAME/compose.${ENV_NAME}.yml"
+                SED_TARGET="env_hash"
 
             else
-
-                COMPOSE_FILE="apps/$APP_NAME/compose.yml"
-                SED_TARGET="env_hash_main"
 
                 for line in $(cat public_keys); do
 
@@ -86,6 +82,9 @@ for file in $STAGED_ENC_FILES; do
                     fi
 
                 done
+
+                COMPOSE_FILE="apps/$APP_NAME/compose.yml"
+                SED_TARGET="env_hash_main"
 
             fi
 
