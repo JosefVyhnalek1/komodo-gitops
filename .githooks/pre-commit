@@ -5,12 +5,26 @@ PUBLIC_KEY="age18hvl9tpxptpc5zk5hn2zmvqhe4zf9gc4zphupdlttfcxml4ue4ksuq2wgl"
 SOPS_VERSION="v3.13.0"
 BIN_DIR="$HOME/.sops-bin"
 SOPS_PATH="$BIN_DIR/sops.exe"
+mkdir -p "$BIN_DIR"
+
+OS_TYPE=$(uname -s | tr '[:upper:]' '[:lower:]')
+
+if [[ "$OS_TYPE" == *"mingw"*  ]]; then
+    SOPS_PATH="$BIN_DIR/sops.exe"
+    URL="https://github.com/getsops/sops/releases/download/$SOPS_VERSION/sops-$SOPS_VERSION.amd64.exe"
+elif [ "$OS_TYPE" = "darwin" ]; then
+    SOPS_PATH="$BIN_DIR/sops"
+    URL="https://github.com/getsops/sops/releases/download/$SOPS_VERSION/sops-$SOPS_VERSION.darwin.arm64"
+else
+    SOPS_PATH="$BIN_DIR/sops"
+    URL="https://github.com/getsops/sops/releases/download/$SOPS_VERSION/sops-$SOPS_VERSION.linux.amd64"
+fi
 
 if [ ! -f "$SOPS_PATH" ]; then
-    echo "SOPS pro Windows nebyl nalezen. Stahuji automaticky..."
-    mkdir -p "$BIN_DIR"
-    curl -fL -o "$SOPS_PATH" "https://github.com/getsops/sops/releases/download/$SOPS_VERSION/sops-$SOPS_VERSION.amd64.exe"
-    echo "SOPS úspěšně stažen."
+    echo "SOPS not found. Downloading..."
+    curl -fL -o "$SOPS_PATH" "$URL"
+    chmod +x "$SOPS_PATH"
+    echo "SOPS downloaded successfully."
 fi
 
 STAGED_ENC_FILES=$(git diff --cached --name-only --diff-filter=ACM | grep '\.enc\.env$' || true)
@@ -22,14 +36,16 @@ for file in $STAGED_ENC_FILES; do
       #šifrovat pro každý prostředí zvlášť každý jiným klíčem
       #když přidávám nový soubor tak je potřeba nastavit konec řádků na LF
 
-            sed -i "s/\r//" "$file" #nastavení konců řádků na LF
+          if [ "$OS_TYPE" = "darwin" ]; then
+                      sed -i "" "s/$'\r'//" "$file"
+                  else
+                      sed -i "s/$'\r'//" "$file"
+          fi
 
             echo "Hook detekoval změnu v $file. Šifruji na místě..."
 
             "$SOPS_PATH" --encrypt --age "$PUBLIC_KEY" "$file" > "$file.tmp"
-
             mv "$file.tmp" "$file"
-
             git add "$file"
 
             echo " Soubor $file byl přepsán šifrou."
@@ -52,7 +68,11 @@ for file in $STAGED_ENC_FILES; do
             if [ -f "$COMPOSE_FILE" ]; then
                 echo "Aktualizuji hash v $COMPOSE_FILE"
 
-                sed -i "s/${SED_TARGET}=.*/${SED_TARGET}=$FILE_HASH/" "$COMPOSE_FILE"
+                if [ "$OS_TYPE" = "darwin" ]; then
+                                sed -i "" "s/${SED_TARGET}=.*/${SED_TARGET}=$FILE_HASH/" "$COMPOSE_FILE"
+                            else
+                                sed -i "s/${SED_TARGET}=.*/${SED_TARGET}=$FILE_HASH/" "$COMPOSE_FILE"
+                fi
 
                 git add "$COMPOSE_FILE"
             else
