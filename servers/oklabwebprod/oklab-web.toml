@@ -1,0 +1,16 @@
+[[stack]]
+name = "oklabwebprod_oklab-web"
+[stack.config]
+server = "oklabwebprod"
+linked_repo = "int-gitops"
+file_paths = [
+    "apps/compose.yml",
+    "apps/oklab-web/compose.yml",
+    "apps/oklab-web/compose.oklabwebprod.yml"
+]
+pre_deploy.command = """
+  chmod 777 ./scripts/env-decryption.sh
+  ./scripts/env-decryption.sh oklab-web oklabwebprod
+"""
+pre_deploy.shell_mode = false
+extra_args = ["--force-recreate"]

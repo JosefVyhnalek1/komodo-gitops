@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-PUBLIC_KEY="age1z4ekqymndqa0nsecuztxw2jsa9xwa4jtmqeldv3u945xhdnqfd4suujv8g"
+PUBLIC_KEY="age18hvl9tpxptpc5zk5hn2zmvqhe4zf9gc4zphupdlttfcxml4ue4ksuq2wgl"
 SOPS_VERSION="v3.13.0"
 BIN_DIR="$HOME/.sops-bin"
 SOPS_PATH="$BIN_DIR/sops.exe"
@@ -22,7 +22,7 @@ for file in $STAGED_ENC_FILES; do
       #šifrovat pro každý prostředí zvlášť každý jiným klíčem
       #když přidávám nový soubor tak je potřeba nastavit konec řádků na LF
 
-            tr -d '\r' < "$file" > "$file.lf" && mv "$file.lf" "$file"
+            sed -i "s/\r//" "$file" #nastavení konců řádků na LF
 
             echo "Hook detekoval změnu v $file. Šifruji na místě..."
 
@@ -42,17 +42,17 @@ for file in $STAGED_ENC_FILES; do
 
                 ENV_NAME="${BASH_REMATCH[1]}"
                 COMPOSE_FILE="apps/$APP_NAME/compose.${ENV_NAME}.yml"
-                SED_TARGET="env_enc_hash"
+                SED_TARGET="env_hash"
             else
 
                 COMPOSE_FILE="apps/$APP_NAME/compose.yml"
-                SED_TARGET="env_enc_hash_main"
+                SED_TARGET="env_hash_main"
             fi
 
             if [ -f "$COMPOSE_FILE" ]; then
                 echo "Aktualizuji hash v $COMPOSE_FILE"
 
-                sed -i -E "s/(${SED_TARGET}:[[:space:]]*[\"']).*([\"'])/\1$FILE_HASH\2/" "$COMPOSE_FILE"
+                sed -i "s/${SED_TARGET}=.*/${SED_TARGET}=$FILE_HASH/" "$COMPOSE_FILE"
 
                 git add "$COMPOSE_FILE"
             else

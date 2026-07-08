@@ -1,0 +1,14 @@
+services:
+  oklab-web:
+    image: nexus3.oksystem.local:8183/oklab-web:1.4.1
+    labels:
+      - env_hash=5f2658c19225bc05982e43f2b3b642e7
+      - "traefik.http.middlewares.oklab-redirect.redirectregex.regex=^https://[^/]+/$"
+      - traefik.http.middlewares.oklab-redirect.redirectregex.replacement=/oklab-web
+
+      - traefik.http.routers.oklab-root.rule=Path(`/`)
+      - traefik.http.routers.oklab-root.entrypoints=websecure
+      - traefik.http.routers.oklab-root.tls=true
+      - traefik.http.routers.oklab-root.middlewares=oklab-redirect
+      - traefik.http.routers.oklab-root.service=oklab-web
+    hostname: oklabwebprod

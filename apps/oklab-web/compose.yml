@@ -1,0 +1,33 @@
+x-logging: &logging-common
+  logging:
+    driver: k8s-file
+    options:
+      max-size: 100mb
+      max-file: 3
+
+services:
+  oklab-web:
+    container_name: oklab-web
+    env_file: '/home/developer/environments/oklab-web/.env'
+    userns_mode: keep-id:uid=999,gid=999
+    labels:
+      - env_hash_main=9330113552104159b53964efd91c732d
+      - logspout.label=fe.oklab-web
+      - traefik.enable=true
+      - traefik.http.services.oklab-web.loadbalancer.serverstransport=transport@file
+      - traefik.http.routers.oklab-web.rule=PathPrefix(`/oklab-web`)
+      - traefik.http.routers.oklab-web.entrypoints=websecure
+      - traefik.http.routers.oklab-web.tls=true
+      - traefik.http.services.oklab-web.loadbalancer.server.port=3000
+    environment:
+      NODE_EXTRA_CA_CERTS: /etc/ssl/certs/ca-cert.cer
+    volumes:
+      - '/home/developer/ca-certs:/etc/ssl/certs:ro,z'
+    networks:
+      - oklab-web
+    <<: *logging-common
+
+
+networks:
+  oklab-web:
+    name: oklab-web

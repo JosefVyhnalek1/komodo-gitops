@@ -1,0 +1,6 @@
+services:
+  oklab-web:
+    image: nexus3.oksystem.local:8183/oklab-web:latest
+    labels:
+      - env_hash=4e352c1e1bae552ea34b1f09136943e3
+    hostname: oklabwebint
