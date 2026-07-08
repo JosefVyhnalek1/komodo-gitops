@@ -1,7 +1,6 @@
 #!/bin/bash
 set -e
 
-PUBLIC_KEY="age18hvl9tpxptpc5zk5hn2zmvqhe4zf9gc4zphupdlttfcxml4ue4ksuq2wgl"
 SOPS_VERSION="v3.13.0"
 BIN_DIR="$HOME/.sops-bin"
 SOPS_PATH="$BIN_DIR/sops.exe"
@@ -31,6 +30,8 @@ STAGED_ENC_FILES=$(git diff --cached --name-only --diff-filter=ACM | grep '\.env
 
 for file in $STAGED_ENC_FILES; do
     if [ -f "$file" ]; then
+
+    FILENAME=$(basename "$file")
 
       if [[ "$FILENAME" =~ \.enc\.env$ ]]; then
           echo "Error: File $file is already encrypted (.enc.env). Only source files starting with an underscore belong in the commit."
