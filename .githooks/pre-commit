@@ -33,12 +33,12 @@ for file in $STAGED_ENC_FILES; do
     if [ -f "$file" ]; then
 
       if [[ "$FILENAME" =~ \.enc\.env$ ]]; then
-          echo "Chyba: Soubor $file je již zašifrovaný (.enc.env). Do commitu patři pouze zdrojový soubor začínající na podtržítko."
+          echo "Error: File $file is already encrypted (.enc.env). Only source files starting with an underscore belong in the commit."
           exit 1
       fi
 
       if [[ ! "$FILENAME" =~ ^_ ]]; then
-          echo "Chyba: Zdrojový soubor $file musí začínat podtržítkem (např. _env_name.env), aby byl detekován."
+          echo "Error: Source file $file must start with an underscore (e.g., _env_name.env) to be detected."
           exit 1
       fi
 
@@ -52,7 +52,7 @@ for file in $STAGED_ENC_FILES; do
                       sed -i "s/$'\r'//" "$file"
           fi
 
-            echo "Hook detekoval změnu v $file."
+            echo "Hook detected a change in $file."
 
             TMP_NAME=$(basename "$file" ".env")
             APP_NAME="${TMP_NAME:1}" # zjistíme jméno aplikace
@@ -97,7 +97,7 @@ for file in $STAGED_ENC_FILES; do
 
                 FILE_HASH=$(md5sum "$file" | awk '{print $1}') #todo tady je snad v pohodě když to dělám z toho co není zašifrovaný
 
-                echo "Aktualizuji hash v $COMPOSE_FILE"
+                echo "Updating hash in $COMPOSE_FILE"
 
                 if [ "$OS_TYPE" = "darwin" ]; then
                                 sed -i "" "s/${SED_TARGET}=.*/${SED_TARGET}=$FILE_HASH/" "$COMPOSE_FILE"
@@ -107,7 +107,7 @@ for file in $STAGED_ENC_FILES; do
 
                 git add "$COMPOSE_FILE"
             else
-                echo "Compose soubor $COMPOSE_FILE nebyl nalezen, hash nelze zapsat."
+                echo "Compose file $COMPOSE_FILE not found, cannot write hash."
                 exit 1
             fi
 
