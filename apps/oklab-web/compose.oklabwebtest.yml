@@ -2,5 +2,5 @@ services:
   oklab-web:
     image: nexus3.oksystem.local:8183/oklab-web:1.4.2
     labels:
-      - env_hash=220f5a8e2744e8cd810948616f3f383d
+      - env_hash=7e382ae1063ea2bbe53c5965bbae5d36
     hostname: oklabwebtest
