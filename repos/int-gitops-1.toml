@@ -1,0 +1,5 @@
+[[repo]]
+name = "int-gitops"
+[repo.config]
+server = "int" #schválně tady nechám int abych věděl že to funguje i na testu
+repo = "JosefVyhnalek1/komodo-gitops"
