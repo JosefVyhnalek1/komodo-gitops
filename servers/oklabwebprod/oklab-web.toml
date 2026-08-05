@@ -13,4 +13,4 @@ pre_deploy.command = """
   ./scripts/env-decryption.sh oklab-web oklabwebprod
 """
 pre_deploy.shell_mode = false
-extra_args = ["--force-recreate"]
+extra_args = ["--force-recreate"]
