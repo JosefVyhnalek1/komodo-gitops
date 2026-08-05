@@ -2,7 +2,7 @@
 [[stack]]
 name = "int_example-application-2"
 [stack.config]
-server = "int"
+server = "test"
 linked_repo = "int-gitops"
 file_paths = [
     "apps/compose.yml",
