@@ -3,7 +3,7 @@
 name = "test-zkouska"
 [stack.config]
 server = "int"
-linked_repo = "int-gitops"
+linked_repo = "int-gitops-1"
 file_paths = [
     "apps/compose.yml",
     "apps/example-application-test/compose.yml",
