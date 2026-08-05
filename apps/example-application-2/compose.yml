@@ -1,5 +1,6 @@
 services:
   web:
+    container_name: test-web-1
     image: nginx:alpine
     restart: always
     labels:
