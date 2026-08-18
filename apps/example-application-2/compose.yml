@@ -7,3 +7,9 @@ services:
       env_enc_hash_main: "55bb85e7ba7e78657323dbdb3d4f2436"
     env_file:
       - ../envs/.envefa
+    healthcheck:
+      test: [ "CMD-SHELL", "wget -qO- http://localhost/ || exit 1" ]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
